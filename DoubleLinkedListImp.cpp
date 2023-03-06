@@ -5,18 +5,18 @@ using namespace std;
 struct Node{
     int data;
     Node* next;
-    //Node* prev;
+    Node* prev;
 };
 
-class SinglyLinkedList{
+class DoubleLinkedList{
     public:
         Node* head;
         Node* sorted; //if insertion sort or selection
         int size=0;
-        SinglyLinkedList() {
+        DoubleLinkedList() {
             head=nullptr;
         }
-        SinglyLinkedList(Node* h)
+        DoubleLinkedList(Node* h)
         {
             head=h;
         }
@@ -24,16 +24,9 @@ class SinglyLinkedList{
         Node* getPrevNode(Node* x){
             Node* currNode = head;
             if(currNode == x) return nullptr;
-            while(currNode!=nullptr)
-            {
-                if(currNode->next == x)
-                {
-                    return currNode;
-                }
-                currNode = currNode->next;
-            }
-            return nullptr;
-        }
+
+            return currNode->prev;
+        } //modified
 
         void swapNodes(Node* x, Node* y) {
 
@@ -41,11 +34,13 @@ class SinglyLinkedList{
                 return;
             }
 
-            Node* prevX = getPrevNode(x);
+            Node* prevX = x->prev;
             Node* currX = x;
+            Node* nextX = x->next;
 
-            Node* prevY = getPrevNode(y);
+            Node* prevY = y->prev;
             Node* currY = y;
+            Node* nextY = y->next;
 
             if (currX == nullptr || currY == nullptr) {
                 return;
@@ -53,13 +48,18 @@ class SinglyLinkedList{
 
             if (prevX != nullptr) {
                 prevX->next = y;
+                y->prev=prevX;
+                nextX->prev=y;
             }
             else {
                 head = currY;
+                y->prev=nullptr;
             }
 
             if (prevY != nullptr) {
                 prevY->next = x;
+                x->prev=prevY;
+                nextY->prev=x;
             } else {
                 head = currX;
             }
@@ -85,6 +85,7 @@ class SinglyLinkedList{
                 {
                     Node* remove = curr->next;
                     curr->next = remove->next;
+                    curr->next->next->prev=curr->next;
                     delete remove;
                     size--;
                     return;
@@ -99,7 +100,7 @@ class SinglyLinkedList{
             {
                 if(print->next != nullptr)
                 {
-                    cout<<print->data<<"->";
+                    cout<<print->data<<"<->";
                     print=print->next;
                 } else {
                     cout<<print->data<<"->null";
@@ -109,10 +110,11 @@ class SinglyLinkedList{
 
             }
             cout<<endl;
-        }
+        } //modified
         void add(int add) {
             Node* addPtr= new Node;
             addPtr->data=add;
+            addPtr->prev=nullptr;
             addPtr->next=nullptr;
 
             Node* curr = head;
@@ -128,14 +130,18 @@ class SinglyLinkedList{
             }
 
             curr->next=addPtr;
+            addPtr->prev=curr;
 
         }
         void selectionSort() {
             Node* cur = head;
             while (cur != nullptr) {
+                cout<<endl<<"reached"<<endl;
+                print();
                 Node* min = cur;
                 Node* comp = cur->next;
                 while (comp != nullptr) {
+                    cout<<"reached";
                     if (min->data > comp->data) {
                         min = comp;
                     }
@@ -168,6 +174,7 @@ class SinglyLinkedList{
             sorted = nullptr;
 
             Node* currNode = head;
+
             while(currNode != nullptr){
                 if ( sorted == nullptr || sorted->data > currNode->data ) {
                     Node* newNode = new Node;
@@ -195,12 +202,12 @@ class SinglyLinkedList{
             }
 
             head = sorted;
-    }
+        }
 
 };
 
 int main(){
-    SinglyLinkedList list;
+    DoubleLinkedList list;
     list.add(7);
     list.add(9);
     list.add(15);
@@ -217,7 +224,7 @@ int main(){
     list.print();
     list.add(15);
 
-    list.selectionSort();
+    list.bubbleSort();
     list.print();
 
     return 0;
