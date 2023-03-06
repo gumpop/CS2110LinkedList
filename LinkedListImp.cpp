@@ -102,16 +102,6 @@ class SinglyLinkedList{
             }
             cout<<endl;
         }
-        void printSorted(){
-            Node* print = sorted;
-            cout<<"Here is the linked list: ";
-            while(print!=nullptr)
-            {
-                cout<<print->data<<"->";
-                print=print->next;
-            }
-            cout<<endl;
-        }
         void add(int add) {
             Node* addPtr= new Node;
             addPtr->data=add;
@@ -166,42 +156,38 @@ class SinglyLinkedList{
                 }
             }
         }
-        void insertionSort() {
-            sorted = nullptr;
+    void insertionSort() {
+        sorted = nullptr;
 
-            Node* currNode = head;
-            while(currNode != nullptr){
-                if ( sorted == nullptr || sorted->data > currNode->data ) {
-                    Node* newNode = new Node;
-                    newNode->data = currNode->data;
-                    newNode->next=sorted;
-                    sorted=newNode;
-                    //printSorted();
-                } else {
-                    Node* temp = sorted;
-                    while ( temp->next != nullptr) {
-                        if(temp->next->data > currNode->data )
-                        {
-                            //Node* tNext = temp->next;
-                            Node* newNode = new Node; newNode->data = currNode->data;
-                            temp->next = newNode;
-                            newNode->next=temp;
-                            //printSorted();
-                            break;
-                        } else temp = temp->next;
-                    }
-                        Node* newNode = new Node; newNode->data = currNode->data; newNode->next=nullptr;
+        Node* currNode = head;
+        while(currNode != nullptr){
+            if ( sorted == nullptr || sorted->data > currNode->data ) {
+                Node* newNode = new Node;
+                newNode->data = currNode->data;
+                newNode->next=sorted;
+                sorted=newNode;
+            } else {
+                Node* temp = sorted;
+                while ( temp->next != nullptr) {
+                    if(temp->next->data > currNode->data )
+                    {
+                        Node* newNode = new Node; newNode->data = currNode->data; newNode->next=temp->next;
                         temp->next = newNode;
-                        //printSorted();
-                        //print();
-
+                        break;
+                    } else temp = temp->next;
                 }
-                printSorted();
-                currNode = currNode->next;
-            }
+                if(!temp->next)
+                {
+                    Node* newNode = new Node; newNode->data = currNode->data; newNode->next=nullptr;
+                    temp->next = newNode;
+                }
 
-            head = sorted;
+            }
+            currNode = currNode->next;
         }
+
+        head = sorted;
+    }
 
 };
 
