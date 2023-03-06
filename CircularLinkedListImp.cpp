@@ -8,33 +8,32 @@ struct Node{
     //Node* prev;
 };
 
-class SinglyLinkedList{
+class CircularLinkedList{
     public:
         Node* head;
-        Node* sorted; //if insertion sort or selection
+        Node* sorted = new Node; //if insertion sort or selection
         int size=0;
-        SinglyLinkedList() {
+        CircularLinkedList() {
             head=nullptr;
         }
-        SinglyLinkedList(Node* h)
+        CircularLinkedList(Node* h)
         {
             head=h;
         }
 
         Node* getPrevNode(Node* x){
             Node* currNode = head;
-            if(currNode == x) return nullptr;
-            while(currNode!=nullptr)
-            {
+            //if(currNode == x) return nullptr;
+
+            do{
                 if(currNode->next == x)
                 {
                     return currNode;
                 }
                 currNode = currNode->next;
-            }
-            return nullptr;
-        }
-
+            } while(currNode!=head);
+            return currNode;
+        } //modified
         void swapNodes(Node* x, Node* y) {
 
             if (x == y) {
@@ -65,9 +64,9 @@ class SinglyLinkedList{
             }
 
             if (x == head) {
-                head = x;
+                head = y;
                 prevX->next = y;
-                Node* temp = prevY->next;
+                Node* temp = x->next;
                 prevY->next = head->next;
                 head->next = temp;
                 return;
@@ -76,11 +75,11 @@ class SinglyLinkedList{
             Node* temp = currY->next;
             currY->next = currX->next;
             currX->next = temp;
-        }
+        } //modified
         void searchDelete(int key){
             Node* curr = head;
-            while(curr->next != nullptr)
-            {
+
+            do{
                 if(curr->next->data == key)
                 {
                     Node* remove = curr->next;
@@ -90,62 +89,77 @@ class SinglyLinkedList{
                     return;
                 }
                 curr = curr->next;
-            }
-        }
-        void print(){
+            }while(curr->next != head);
+        } //modified
+        void print(){ //modified
             Node* print = head;
             cout<<"Here is the linked list: Head->";
-            while(print!=nullptr)
-            {
-                if(print->next != nullptr)
+            do{
+                if(print->next != head)
                 {
                     cout<<print->data<<"->";
                     print=print->next;
                 } else {
-                    cout<<print->data<<"->null";
+                    cout<<print->data;
                     print=print->next;
                 }
 
 
-            }
+            } while(print!=head);
             cout<<endl;
-        }
-        void add(int add) {
+        } //modified
+        void add(int add) { //modified for circle
             Node* addPtr= new Node;
             addPtr->data=add;
-            addPtr->next=nullptr;
-
             Node* curr = head;
             size++;
             if(curr == nullptr)
             {
                 head = addPtr;
+                addPtr->next=head;
                 return;
             }
-            while(curr->next != nullptr)
-            {
+            do{
                 curr = curr->next;
-            }
+            }while(curr->next != head);
+            addPtr->next=head;
+            curr->next=addPtr;
 
+        } //modified
+        void addSort(int add) { //modified for circle
+            Node* addPtr= new Node;
+            addPtr->data=add;
+            Node* curr = sorted;
+            size++;
+            if(curr == nullptr)
+            {
+                head = addPtr;
+                addPtr->next=head;
+                return;
+            }
+            do{
+                curr = curr->next;
+            }while(curr->next != sorted);
+            addPtr->next=sorted;
             curr->next=addPtr;
 
         }
         void selectionSort() {
             Node* cur = head;
-            while (cur != nullptr) {
+             do {
                 Node* min = cur;
                 Node* comp = cur->next;
-                while (comp != nullptr) {
+                do{
                     if (min->data > comp->data) {
                         min = comp;
                     }
                     comp = comp->next;
-                }
+                } while (comp != head);
                 Node* next = cur->next;
                 swapNodes(cur, min);
                 cur = next;
-            }
-        }
+            } while (cur->next != head);
+        } //modified
         void bubbleSort() {
             for (int i = 0; i < size; i++) {
 
@@ -164,43 +178,50 @@ class SinglyLinkedList{
                 }
             }
         }
-    void insertionSort() {
-        sorted = nullptr;
+        void insertionSort() {
+        sorted->data = head->data;
+        sorted-> next = sorted;
+        Node* currNode = head->next;
+        do{
 
-        Node* currNode = head;
-        while(currNode != nullptr){
-            if ( sorted == nullptr || sorted->data > currNode->data ) {
+            if ( sorted->data > currNode->data ) {
                 Node* newNode = new Node;
                 newNode->data = currNode->data;
+                Node* temp = sorted;
+                do{
+                    temp = temp->next;
+                } while(temp->next != sorted);
+                temp->next = newNode;
                 newNode->next=sorted;
                 sorted=newNode;
-            } else {
+            }else {
                 Node* temp = sorted;
-                while ( temp->next != nullptr) {
+                do {
+
                     if(temp->next->data > currNode->data )
                     {
                         Node* newNode = new Node; newNode->data = currNode->data; newNode->next=temp->next;
                         temp->next = newNode;
                         break;
                     } else temp = temp->next;
-                }
-                if(!temp->next)
+                } while ( temp->next != sorted);
+                if(temp->next == sorted)
                 {
-                    Node* newNode = new Node; newNode->data = currNode->data; newNode->next=nullptr;
-                    temp->next = newNode;
+                    addSort(currNode->data);
                 }
 
             }
+
             currNode = currNode->next;
-        }
+        } while(currNode != head);
 
         head = sorted;
-    }
+    } //modified
 
 };
 
 int main(){
-    SinglyLinkedList list;
+    CircularLinkedList list;
     list.add(7);
     list.add(9);
     list.add(15);
@@ -217,7 +238,7 @@ int main(){
     list.print();
     list.add(15);
 
-    list.bubbleSort();
+    list.insertionSort();
     list.print();
 
     return 0;
