@@ -136,19 +136,18 @@ class DoubleLinkedList{
         void selectionSort() {
             Node* cur = head;
             while (cur != nullptr) {
-                cout<<endl<<"reached"<<endl;
-                print();
                 Node* min = cur;
                 Node* comp = cur->next;
                 while (comp != nullptr) {
-                    cout<<"reached";
                     if (min->data > comp->data) {
                         min = comp;
                     }
                     comp = comp->next;
                 }
                 Node* next = cur->next;
-                swapNodes(cur, min);
+                int val = cur->data;
+                cur->data=min->data;
+                min->data=val;
                 cur = next;
             }
         }
@@ -159,10 +158,11 @@ class DoubleLinkedList{
                 Node* y = x->next;
                 for (int j = 0; j<size-i-1; j++) {
                     if (x->data > y->data) {
-                        swapNodes(x, y);
-                        Node* temp = x;
-                        x = y->next;
-                        y = temp->next;
+                        int val = x->data;
+                        x->data=y->data;
+                        y->data=val;
+                        x = x->next;
+                        y = y->next;
                     } else{
                         x = x->next;
                         y = x->next;
@@ -224,7 +224,25 @@ int main(){
     list.print();
     list.add(15);
 
-    list.bubbleSort();
+    list.insertionSort();
+    list.print();
+    list.add(7);
+    list.add(9);
+    list.add(15);
+    list.add(12);
+    list.add(15);
+    list.add(8);
+    list.add(8);
+    list.add(2);
+    list.add(4);
+    list.add(2);
+
+    list.print();
+    list.searchDelete(15);
+    list.print();
+    list.add(15);
+
+    list.insertionSort();
     list.print();
 
     return 0;
